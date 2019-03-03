@@ -1,3 +1,5 @@
+type State = Todo[];
+
 interface AddTodo {
   type: "ADD_TODO";
   id: number;
@@ -17,7 +19,7 @@ interface Todo {
   text: string;
 }
 
-const todos = (state: Todo[] = [], action: Action): Todo[] => {
+const todos = (state: State = [], action: Action): State => {
   switch (action.type) {
     case "ADD_TODO":
       return [
