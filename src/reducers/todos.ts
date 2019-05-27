@@ -1,17 +1,33 @@
 type State = Todo[];
 
-interface AddTodo {
-  type: "ADD_TODO";
-  id: number;
-  text: string;
+interface Action {
+  update: (s: State) => State;
 }
 
-interface ToggleTodo {
-  type: "TOGGLE_TODO";
-  id: number;
+export class AddTodo implements Action {
+  constructor(public id: number, public text: string) {}
+
+  update(state: State) {
+    return [
+      ...state,
+      {
+        id: this.id,
+        text: this.text,
+        completed: false
+      }
+    ];
+  }
 }
 
-type Action = AddTodo | ToggleTodo;
+export class ToggleTodo implements Action {
+  constructor(public id: number) {}
+
+  update(state: State) {
+    return state.map(todo =>
+      todo.id === this.id ? { ...todo, completed: !todo.completed } : todo
+    );
+  }
+}
 
 interface Todo {
   id: number;
@@ -20,23 +36,8 @@ interface Todo {
 }
 
 const todos = (state: State = [], action: Action): State => {
-  switch (action.type) {
-    case "ADD_TODO":
-      return [
-        ...state,
-        {
-          id: action.id,
-          text: action.text,
-          completed: false
-        }
-      ];
-    case "TOGGLE_TODO":
-      return state.map(todo =>
-        todo.id === action.id ? { ...todo, completed: !todo.completed } : todo
-      );
-    default:
-      return state;
-  }
+  if (action.update) return action.update(state);
+  return state;
 };
 
 export default todos;
